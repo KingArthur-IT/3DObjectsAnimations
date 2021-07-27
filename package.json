@@ -1,0 +1,29 @@
+{
+  "name": "3dobjectsanimations",
+  "version": "1.0.0",
+  "description": "3D Objects Animations based on Three.js",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c \"rollup_config.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KingArthur-IT/3DObjectsAnimations.git"
+  },
+  "author": "Artem Ostapenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KingArthur-IT/3DObjectsAnimations/issues"
+  },
+  "homepage": "https://github.com/KingArthur-IT/3DObjectsAnimations#readme",
+  "dependencies": {
+    "three": "^0.130.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "rollup": "^2.54.0",
+    "serve": "^12.0.0"
+  }
+}
