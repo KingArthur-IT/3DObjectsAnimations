@@ -1,4 +1,4 @@
-//import * as THREE from 'three';
+import * as THREE from 'three';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
 import { Scene } from 'three/src/scenes/Scene.js';
 import { PointLight } from 'three/src/lights/PointLight.js';
@@ -17,7 +17,7 @@ let objectsArray = [];
 class MeshObj {
     constructor(sizeVector, color, rotation, position, moveDirection) {
         const materialExtr = new MeshPhongMaterial({ color: color });
-        let RoundedBox = createBoxWithRoundedEdges(sizeVector.x, sizeVector.y, sizeVector.z, 1, 2);
+        let RoundedBox = createBoxWithRoundedEdges(sizeVector.x, sizeVector.y, sizeVector.z, 1, 100);
         this.mesh = new Mesh(RoundedBox, materialExtr);
         this.startAngle = rotation;
         this.startPosition = position;
@@ -70,7 +70,7 @@ class App {
         objectsArray.push(new MeshObj(
             new Vector3(12, 8, 7),
             0xf7f7f7,
-            new Vector3(-0.5, 0.5, 0.1),
+            new Vector3(-0.5, 0.5, 0.1), //-0.5, 0.5, 0.1
             new Vector3(10.0, 5.0, 0.0),
             new Vector3(1.0, -1.0, 0.0)
         ));
@@ -84,8 +84,14 @@ class App {
         objectsArray.forEach(element => {
             scene.add(element.mesh)
         });
+
+        let box = new THREE.BoxGeometry(20, 20, 20, 100, 100, 100);
+        let materialExtr = new MeshPhongMaterial({ color: 0xf7f7f7 });
+        let mesh = new Mesh(box, materialExtr);
+        mesh.rotation.set(-0.5, 0.5, 0.1)
+        //scene.add(mesh)
 		//renderer
-		renderer = new WebGLRenderer({ canvas: canvas });
+		renderer = new WebGLRenderer({ canvas: canvas, antialias: true });
 		renderer.setClearColor(0xffffff);
 
 		renderer.render(scene, camera);
@@ -125,7 +131,7 @@ function onScroll(e) {
 
 function createBoxWithRoundedEdges( width, height, depth, radius0, smoothness ) {
   let shape = new Shape();
-  let eps = 0.00001;
+  let eps = 0.000001;
   let radius = radius0 - eps;
   shape.absarc( eps, eps, eps, -Math.PI / 2, -Math.PI, true );
   shape.absarc( eps, height -  radius * 2, eps, Math.PI, Math.PI / 2, true );
