@@ -29,14 +29,17 @@ class MeshObj {
 
 class App {
 	init() {
-		canvas = document.getElementById('main3DCanvas');
+        canvas = document.getElementById('main3DCanvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 		canvas.setAttribute('width', 	window.innerWidth);
-		canvas.setAttribute('height',   window.innerHeight);
+        canvas.setAttribute('height', window.innerHeight);
 		
 		//scene and camera
 		scene = new Scene();
 		camera = new PerspectiveCamera(40.0, window.innerWidth / window.innerHeight, 0.1, 5000);
-		camera.position.set(0, 0, 100);
+        camera.position.set(0, 0, 100);
+        
 		//light
         light = new PointLight(0xffffff, 0.2);
         light.position.set(0, 50, 60);
@@ -95,7 +98,8 @@ class App {
 		renderer.setClearColor(0xffffff);
 
 		renderer.render(scene, camera);
-		//window.addEventListener( 'resize', onWindowResize, false );
+        window.addEventListener('resize', onWindowResize, false);
+        onWindowResize();
 		window.addEventListener('mousemove', onMouseMove, false);
 		window.addEventListener('scroll', onScroll, false);
 
@@ -114,6 +118,27 @@ function onMouseMove(e) {
     });
 }
 
+function onWindowResize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.setAttribute('width', 	window.innerWidth);
+    canvas.setAttribute('height', window.innerHeight);
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    let size = window.innerWidth < 500 ? window.innerWidth < 400 ? 160 : 120 : 100
+    
+    objectsArray.forEach(element => {
+        //element.mesh.scale.copy( new Vector3(size, size, size));
+        element.mesh.position.copy(element.startPosition);
+    });
+    
+    camera.position.set(0, 0, size);
+}
+
 function animate() {
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
@@ -121,7 +146,7 @@ function animate() {
 
 function onScroll(e) {
     let distanceToTop = canvas.getBoundingClientRect().top;
-    let scrollMoveKoeff = -100.0 * (distanceToTop / canvas.width);
+    let scrollMoveKoeff = -100.0 * (distanceToTop / canvas.height);
     objectsArray.forEach(element => {
         element.mesh.position.x = element.startPosition.x + element.moveDirection.x * scrollMoveKoeff;
         element.mesh.position.y = element.startPosition.y + element.moveDirection.y * scrollMoveKoeff;
