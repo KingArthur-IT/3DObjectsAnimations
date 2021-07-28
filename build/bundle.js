@@ -75034,17 +75034,18 @@ void main() {
 	}
 
 	function onWindowResize() {
-	    canvas.width = window.innerWidth;
-	    canvas.height = window.innerHeight;
-	    canvas.setAttribute('width', 	window.innerWidth);
-	        canvas.setAttribute('height', window.innerHeight);
+	    console.log(document.documentElement.clientWidth);
+	    canvas.width = document.documentElement.clientWidth;//window.innerWidth;
+	    canvas.height = document.documentElement.clientHeight; //window.innerHeight;
+	    canvas.setAttribute('width', 	document.documentElement.clientWidth);
+	    canvas.setAttribute('height', document.documentElement.clientHeight);
 
-	    camera.aspect = window.innerWidth / window.innerHeight;
+	    camera.aspect = document.documentElement.clientWidth / document.documentElement.clientHeight;
 	    camera.updateProjectionMatrix();
 
-	    renderer.setSize(window.innerWidth, window.innerHeight);
+	    renderer.setSize(document.documentElement.clientWidth, document.documentElement.clientHeight);
 	    
-	    let size = window.innerWidth < 500 ? window.innerWidth < 400 ? 160 : 120 : 100;
+	    let size = document.documentElement.clientWidth < 500 ? document.documentElement.clientWidth < 400 ? 160 : 120 : 100;
 	    
 	    objectsArray.forEach(element => {
 	        //element.mesh.scale.copy( new Vector3(size, size, size));
