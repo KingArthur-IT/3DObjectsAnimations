@@ -1,24 +1,15 @@
 import * as THREE from 'three';
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-import { Scene } from 'three/src/scenes/Scene.js';
-import { PointLight } from 'three/src/lights/PointLight.js';
-import { AmbientLight } from 'three/src/lights/AmbientLight.js';
-import { Vector3 } from 'three/src/math/Vector3.js';
-import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
-import { Shape } from 'three/src/extras/core/Shape.js';
-import { ExtrudeGeometry } from 'three/src/geometries/ExtrudeGeometry.js';
-import { MeshPhongMaterial } from 'three/src/materials/MeshPhongMaterial.js';
-import { Mesh } from 'three/src/objects/Mesh.js';
 
 //scene
 let canvas, camera, scene, light, light2, renderer;
 let objectsArray = [];
+let Earth;
 
 class MeshObj {
     constructor(sizeVector, color, rotation, position, moveDirection) {
-        const materialExtr = new MeshPhongMaterial({ color: color });
+        const materialExtr = new THREE.MeshPhongMaterial({ color: color });
         let RoundedBox = createBoxWithRoundedEdges(sizeVector.x, sizeVector.y, sizeVector.z, 1, 100);
-        this.mesh = new Mesh(RoundedBox, materialExtr);
+        this.mesh = new THREE.Mesh(RoundedBox, materialExtr);
         this.startAngle = rotation;
         this.startPosition = position;
         this.moveDirection = moveDirection;
@@ -36,15 +27,15 @@ class App {
         canvas.setAttribute('height', window.innerHeight);
 		
 		//scene and camera
-		scene = new Scene();
-		camera = new PerspectiveCamera(40.0, window.innerWidth / window.innerHeight, 0.1, 5000);
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(40.0, window.innerWidth / window.innerHeight, 0.1, 5000);
         camera.position.set(0, 0, 100);
         
 		//light
-        light = new PointLight(0xffffff, 0.2);
+        light = new THREE.PointLight(0xffffff, 0.2);
         light.position.set(0, 50, 60);
         scene.add(light);
-        light2 = new AmbientLight(0xffffff, 0.8);
+        light2 = new THREE.AmbientLight(0xffffff, 0.8);
         light2.position.set(0, 100, 100);
         scene.add(light2);
 
@@ -64,37 +55,51 @@ class App {
         */
 
         objectsArray.push(new MeshObj(
-            new Vector3(10, 10, 10),
+            new THREE.Vector3(10, 10, 10),
             0xf7f7f7,
-            new Vector3(0.0, 0.4, -0.5),
-            new Vector3(0.0, 20.0, 0.0),
-            new Vector3(0.0, 1.0, 0.0)
+            new THREE.Vector3(0.0, 0.4, -0.5),
+            new THREE.Vector3(0.0, 20.0, 0.0),
+            new THREE.Vector3(0.0, 1.0, 0.0)
         ));
         objectsArray.push(new MeshObj(
-            new Vector3(12, 8, 7),
+            new THREE.Vector3(12, 8, 7),
             0xf7f7f7,
-            new Vector3(-0.5, 0.5, 0.1), //-0.5, 0.5, 0.1
-            new Vector3(10.0, 5.0, 0.0),
-            new Vector3(1.0, -1.0, 0.0)
+            new THREE.Vector3(-0.5, 0.5, 0.1), //-0.5, 0.5, 0.1
+            new THREE.Vector3(10.0, 5.0, 0.0),
+            new THREE.Vector3(1.0, -1.0, 0.0)
         ));
         objectsArray.push(new MeshObj(
-            new Vector3(10, 8, 10),
+            new THREE.Vector3(10, 8, 10),
             0xf7f7f7,
-            new Vector3(0.5, 0.5, 0.1),
-            new Vector3(-8.0, 5.0, 0.0),
-            new Vector3(-1.0, -1.0, 0.0)
+            new THREE.Vector3(0.5, 0.5, 0.1),
+            new THREE.Vector3(-8.0, 5.0, 0.0),
+            new THREE.Vector3(-1.0, -1.0, 0.0)
         ));
         objectsArray.forEach(element => {
             scene.add(element.mesh)
         });
 
-        let box = new THREE.BoxGeometry(20, 20, 20, 100, 100, 100);
-        let materialExtr = new MeshPhongMaterial({ color: 0xf7f7f7 });
-        let mesh = new Mesh(box, materialExtr);
+        const sphereGeometry = new THREE.SphereGeometry(10, 16, 16);
+		let textureLoader = new THREE.TextureLoader();
+		let earthTexture = textureLoader.load('./assets/img/earth.jpg', function (texture) {
+			//texture.minFilter = THREE.LinearFilter;
+        });
+        earthTexture.wrapS = THREE.RepeatWrapping;
+        earthTexture.wrapT = THREE.RepeatWrapping;
+        var earthMaterial = new THREE.MeshBasicMaterial( { map: earthTexture } );
+        Earth = new THREE.Mesh(sphereGeometry, earthMaterial);
+        Earth.position.y = -15;
+        scene.add(Earth);
+
+        let box = new THREE.BoxGeometry(10, 10, 10, 100, 100, 100);
+        let materialExtr = new THREE.MeshPhongMaterial({ color: 0xf7f7f7 });
+        let mesh = new THREE.Mesh(box, materialExtr);
         mesh.rotation.set(-0.5, 0.5, 0.1)
-        //scene.add(mesh)
-		//renderer
-		renderer = new WebGLRenderer({ canvas: canvas, antialias: true });
+        mesh.position.set(40, 0.0, 0.0)
+        scene.add(mesh)
+
+        //renderer
+		renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 		renderer.setClearColor(0xffffff);
 
 		renderer.render(scene, camera);
@@ -119,7 +124,6 @@ function onMouseMove(e) {
 }
 
 function onWindowResize() {
-    console.log(document.documentElement.clientWidth)
     canvas.width = document.documentElement.clientWidth;//window.innerWidth;
     canvas.height = document.documentElement.clientHeight; //window.innerHeight;
     canvas.setAttribute('width', 	document.documentElement.clientWidth);
@@ -141,6 +145,7 @@ function onWindowResize() {
 }
 
 function animate() {
+    Earth.rotation.y += 0.001;
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 }
@@ -156,14 +161,14 @@ function onScroll(e) {
 }
 
 function createBoxWithRoundedEdges( width, height, depth, radius0, smoothness ) {
-  let shape = new Shape();
+  let shape = new THREE.Shape();
   let eps = 0.000001;
   let radius = radius0 - eps;
   shape.absarc( eps, eps, eps, -Math.PI / 2, -Math.PI, true );
   shape.absarc( eps, height -  radius * 2, eps, Math.PI, Math.PI / 2, true );
   shape.absarc( width - radius * 2, height -  radius * 2, eps, Math.PI / 2, 0, true );
   shape.absarc( width - radius * 2, eps, eps, 0, -Math.PI / 2, true );
-  let geometry = new ExtrudeGeometry( shape, {
+  let geometry = new THREE.ExtrudeGeometry( shape, {
     amount: depth - radius0 * 2,
     bevelEnabled: true,
     bevelSegments: smoothness * 2,
